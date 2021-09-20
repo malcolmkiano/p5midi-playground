@@ -49,7 +49,10 @@ function draw() {
   recorder.draw();
 
   // show help if not interacted for a while
-  if (recorder.appState !== 2 && frameCount - lastInteraction > frameRate() * 5 && userHasInteracted) {
+  if (recorder.appState !== 2 &&
+    !noteIsDown() &&
+    frameCount - lastInteraction > frameRate() * 5 &&
+    userHasInteracted) {
     userHasInteracted = false;
   }
 }
@@ -92,4 +95,8 @@ function midiNoteOn(event) {
 
   // add a particle
   particles.push(new Particle(event.velocity));
+}
+
+function midiNoteOff() {
+  lastInteraction = frameCount;
 }

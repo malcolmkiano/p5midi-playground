@@ -98,13 +98,26 @@ const recorder = {
     }
 
     // show app status message
-    fill(255);
+    fill(this.appState === 1 ? '#4FF' : '#F44');
+    rectMode(CORNER);
     textAlign(CENTER);
     textSize(fontSize);
-    rectMode(CORNER);
     text(this.statusMessage(), width / 2, height - (fontSize * 1.15));
 
     // watch for cooldowns
     this.resetAppState();
+  },
+
+  /** draws the guides to use the recorder */
+  drawInstructions() {
+    let fontSize = height / 40;
+    let startY = height * .75;
+    let lineHeight = fontSize * 1.4;
+
+    fill(140);
+    textSize(fontSize);
+    text('Press [P] to toggle Practice mode', width / 2, startY);
+    text('Press [Enter] to log MIDI sequence', width / 2, startY + (lineHeight));
+    text('Press [Escape] to clear MIDI sequence', width / 2, startY + (2 * lineHeight));
   }
 }

@@ -39,9 +39,12 @@ const chordDetector = {
     '1 3 5 9': ['add9', 'Added 9th'],
     '1 2.5 5 9': ['madd9', 'Minor add 9th'],
     '1 5 6.5 9 11': ['11', '11th'],
+    '1 3 5 6.5 9 11': ['11', '11th'],
     '1 2.5 5 6.5 9 11': ['m11', 'Minor 11th'],
     '1 3 5 6.5 9 13': ['13', '13th'],
+    '1 3 5 6.5 9 11 13': ['13', '13th'],
     '1 3 5 7 9 13': ['maj13', 'Major 13th'],
+    '1 3 5 7 9 11 13': ['maj13', 'Major 13th'],
     '1 2.5 5 6.5 9 11 13': ['m13', 'Minor 13th'],
     '1 4 5': ['sus', 'Suspended 4th'],
     '1 2 5': ['sus2', 'Suspended 2nd'],
@@ -92,8 +95,10 @@ const chordDetector = {
   /** attempts to swap values greater than 7 to find a chord */
   findSwappedChord(positions) {
     // swap >7 values
-    const swapped = positions
-      .map((pos) => +pos > 7 ? pos - 7 : +pos)
+    const rawSwapped = positions
+      .map((pos) => +pos > 7 ? (pos % 7) || 7 : +pos);
+
+    const swapped = this.removeDuplicates(rawSwapped)
       .sort((a, b) => a - b);
 
     const swappedChord = this.chords[swapped.join(' ')];
@@ -169,7 +174,7 @@ const chordDetector = {
 
     // find the new positions in this scale
     let positions = keysAndOctaves.map((ko) =>
-      scale[ko.key] + (/(A|B)/.test(ko.key) ? 0 : ((Math.min(ko.octave - minOctave, 1)) * 7))
+      scale[ko.key] + ((ko.octave - minOctave) * 7)
     );
 
     // filter out weirdness
@@ -182,13 +187,19 @@ const chordDetector = {
       }
     });
 
-    // remove duplicates
-    let noDuplicates = {};
-    positions.forEach((pos) => {
-      noDuplicates[pos] = null;
+    return this.removeDuplicates(positions)
+      .filter(p => p !== 8)
+      .sort((a, b) => a - b);
+  },
+
+  /** removes duplicate items from an array */
+  removeDuplicates(array) {
+    const noDuplicates = {};
+    array.forEach((item) => {
+      noDuplicates[item] = null;
     });
 
-    return Object.keys(noDuplicates).sort((a, b) => a - b);
+    return Object.keys(noDuplicates);
   },
 
   /** draws current chord to the canvas */

@@ -1,7 +1,7 @@
 class Synth {
   constructor(image) {
     this.image = image;
-    this.synth = new Tone.PolySynth(16, Tone.Synth).toMaster();
+    this.synth = new Tone.PolySynth(Tone.Synth).toDestination();
     this.synth.set({ volume: -3, });
   }
 

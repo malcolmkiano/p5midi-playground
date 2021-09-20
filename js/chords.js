@@ -21,33 +21,33 @@ const chordDetector = {
 
   /** chords */
   chords: {
-    '1 3 5': ['', 'Major'],
-    '1 2.5 5': ['m', 'Minor'],
+    '1 3 5': ['', 'major'],
+    '1 2.5 5': ['m', 'minor'],
     '1 3 5 6.5': ['7', '7th '],
-    '1 3 5 7': ['maj7', 'Major 7th'],
-    '1 2.5 5 6.5': ['m7', 'Minor 7th'],
+    '1 3 5 7': ['maj7', 'major 7th'],
+    '1 2.5 5 6.5': ['m7', 'minor 7th'],
     '1 3 5 6': ['6', '6th'],
-    '1 2.5 5 6': ['m6', 'Minor 6th'],
-    '1 2.5 4.5': ['dim', 'Diminished'],
-    '1 2.5 4.5 6.5': ['m7b5', 'Half diminished 7th'],
-    '1 3 5.5': ['aug', 'Augmented'],
+    '1 2.5 5 6': ['m6', 'minor 6th'],
+    '1 2.5 4.5': ['dim', 'diminished'],
+    '1 2.5 4.5 6.5': ['m7b5', 'half diminished 7th'],
+    '1 3 5.5': ['aug', 'augmented'],
     '1 3 5 6.5 9': ['9', '9th'],
     '1 3 5 6.5 9.5': ['7#9', '7th #9'],
-    '1 3 5 7 9': ['maj9', 'Major 9th'],
-    '1 2.5 5 6.5 9': ['m9', 'Minor 9th'],
-    '1 2 3 5': ['add2', 'Added 2nd'],
-    '1 3 5 9': ['add9', 'Added 9th'],
-    '1 2.5 5 9': ['madd9', 'Minor add 9th'],
+    '1 3 5 7 9': ['maj9', 'major 9th'],
+    '1 2.5 5 6.5 9': ['m9', 'minor 9th'],
+    '1 2 3 5': ['add2', 'added 2nd'],
+    '1 3 5 9': ['add9', 'added 9th'],
+    '1 2.5 5 9': ['madd9', 'minor add 9th'],
     '1 5 6.5 9 11': ['11', '11th'],
     '1 3 5 6.5 9 11': ['11', '11th'],
-    '1 2.5 5 6.5 9 11': ['m11', 'Minor 11th'],
+    '1 2.5 5 6.5 9 11': ['m11', 'minor 11th'],
     '1 3 5 6.5 9 13': ['13', '13th'],
     '1 3 5 6.5 9 11 13': ['13', '13th'],
-    '1 3 5 7 9 13': ['maj13', 'Major 13th'],
-    '1 3 5 7 9 11 13': ['maj13', 'Major 13th'],
-    '1 2.5 5 6.5 9 11 13': ['m13', 'Minor 13th'],
-    '1 4 5': ['sus', 'Suspended 4th'],
-    '1 2 5': ['sus2', 'Suspended 2nd'],
+    '1 3 5 7 9 13': ['maj13', 'major 13th'],
+    '1 3 5 7 9 11 13': ['maj13', 'major 13th'],
+    '1 2.5 5 6.5 9 11 13': ['m13', 'minor 13th'],
+    '1 4 5': ['sus', 'suspended 4th'],
+    '1 2 5': ['sus2', 'suspended 2nd'],
     '1 5': ['5', '5th (power chord)']
   },
 
@@ -94,6 +94,8 @@ const chordDetector = {
 
   /** attempts to swap values greater than 7 to find a chord */
   findSwappedChord(positions) {
+    let chord;
+
     // swap >7 values
     const rawSwapped = positions
       .map((pos) => +pos > 7 ? (pos % 7) || 7 : +pos);
@@ -101,8 +103,23 @@ const chordDetector = {
     const swapped = this.removeDuplicates(rawSwapped)
       .sort((a, b) => a - b);
 
-    const swappedChord = this.chords[swapped.join(' ')];
-    return swappedChord;
+    chord = this.chords[swapped.join(' ')];
+
+    if (chord) return chord;
+
+    // check for 9-11-13
+    for (let i = 1; i < swapped.length; i++) {
+      if ([2, 4, 6].includes(swapped[i])) {
+        let alt = [...swapped];
+        alt[i] += 7;
+
+        let altSwapped = this.removeDuplicates(alt)
+          .sort((a, b) => a - b);
+
+        chord = this.chords[altSwapped.join(' ')];
+        if (chord) return chord;
+      }
+    }
   },
 
   /** assigns the current chord & description */
@@ -120,7 +137,7 @@ const chordDetector = {
   /** attempts to find an inversion given keys */
   findInversion(positions, transposedScale, keysAndOctaves) {
     for (let i = 1; i < positions.length; i++) {
-      let newRootIndex = Object.values(transposedScale).indexOf((+positions[i] % 7) || 7);
+      let newRootIndex = Object.values(transposedScale).indexOf((positions[i] % 7) || 7);
       let newRoot = Object.keys(transposedScale)[newRootIndex];
       let newTransposedScale = this.transpose(newRoot);
       let newPositions = this.getChordStructure(keysAndOctaves, newTransposedScale);
@@ -199,7 +216,7 @@ const chordDetector = {
       noDuplicates[item] = null;
     });
 
-    return Object.keys(noDuplicates);
+    return Object.keys(noDuplicates).map(val => +val);
   },
 
   /** draws current chord to the canvas */

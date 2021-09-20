@@ -88,7 +88,7 @@ const recorder = {
     if (this.appState === 2) {
       push();
       noStroke();
-      fill(this.bitOn ? 'red' : 0);
+      fill(this.bitOn ? '#F00' : 0);
       ellipse((width / 2) - (fontSize * 3.5), height - (fontSize * 1.5), fontSize * .95);
       pop();
 
@@ -98,7 +98,7 @@ const recorder = {
     }
 
     // show app status message
-    fill(this.appState === 1 ? '#4FF' : '#F44');
+    fill(this.appState === 1 ? '#4FF' : 255);
     rectMode(CORNER);
     textAlign(CENTER);
     textSize(fontSize);

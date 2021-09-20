@@ -177,6 +177,7 @@ const chordDetector = {
   draw() {
     let fontSize = Math.max(height / 10, width / 20);
 
+    fill(255);
     textSize(fontSize);
     rectMode(CENTER);
     textAlign(CENTER);

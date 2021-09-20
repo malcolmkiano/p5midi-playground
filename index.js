@@ -2,6 +2,7 @@ let particles = [];
 let synth;
 let userHasInteracted = false;
 let synthImage;
+let lastInteraction;
 
 function preload() {
   synthImage = loadImage('img/MIDI.svg');
@@ -46,6 +47,11 @@ function draw() {
 
   // draw recording interface
   recorder.draw();
+
+  // show help if not interacted for a while
+  if (recorder.appState !== 2 && frameCount - lastInteraction > frameRate() * 5 && userHasInteracted) {
+    userHasInteracted = false;
+  }
 }
 
 function keyPressed() {
@@ -68,6 +74,9 @@ function midiNoteOn(event) {
   if (!userHasInteracted) {
     userHasInteracted = true;
   }
+
+  // keep track of last interaction
+  lastInteraction = frameCount;
 
   // play the note
   synth.play(event.note);

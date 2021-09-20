@@ -56,9 +56,9 @@ const chordDetector = {
     }
 
     // break up the keys and their respective octaves
-    let keysAndOctaves = notes.map((note) => {
-      let key = note.match(/[A-G\#]/g).join('');
-      let octave = +note.match(/\d+/g).join('');
+    const keysAndOctaves = notes.map((note) => {
+      const key = note.match(/[A-G\#]/g).join('');
+      const octave = +note.match(/\d+/g).join('');
       return { key, octave };
     });
 
@@ -68,21 +68,18 @@ const chordDetector = {
     const positions = this.getChordStructure(keysAndOctaves, transposedScale);
 
     // try and find a chord based on our structure
-    let chord = this.chords[positions.join(' ')];
+    const chord = this.chords[positions.join(' ')];
     if (chord) {
       this.setCurrentChord(root.key, chord);
     } else {
-      // try the 9-2 swap
-      let swapped = positions.map((pos) => pos === '9' ? '2' : pos).sort();
-      console.log(swapped);
-      let swappedChord = this.chords[swapped.join(' ')];
+      const swappedChord = this.findSwappedChord(positions);
       if (swappedChord) {
         this.setCurrentChord(root.key, swappedChord);
         return;
       }
 
       // try inversions
-      let inversion = this.findInversion(positions, transposedScale, keysAndOctaves);
+      const inversion = this.findInversion(positions, transposedScale, keysAndOctaves);
       if (inversion) {
         this.setCurrentChord(inversion.root, inversion.chord);
         return;
@@ -90,6 +87,17 @@ const chordDetector = {
 
       this.clearCurrentChord();
     }
+  },
+
+  /** attempts to swap values greater than 7 to find a chord */
+  findSwappedChord(positions) {
+    // swap >7 values
+    const swapped = positions
+      .map((pos) => +pos > 7 ? pos - 7 : +pos)
+      .sort((a, b) => a - b);
+
+    const swappedChord = this.chords[swapped.join(' ')];
+    return swappedChord;
   },
 
   /** assigns the current chord & description */

@@ -28,6 +28,6 @@ class Synth {
     fill(255);
     textAlign(CENTER);
     textSize(height / 40);
-    text('Plug in a MIDI controller to start playing', width / 2, (height / 2) + (synthHeight * .2));
+    text('Plug in a MIDI controller and start playing', width / 2, (height / 2) + (synthHeight * .2));
   }
 }

@@ -72,6 +72,16 @@ const chordDetector = {
     if (chord) {
       this.setCurrentChord(root.key, chord);
     } else {
+      // try the 9-2 swap
+      let swapped = positions.map((pos) => pos === '9' ? '2' : pos).sort();
+      console.log(swapped);
+      let swappedChord = this.chords[swapped.join(' ')];
+      if (swappedChord) {
+        this.setCurrentChord(root.key, swappedChord);
+        return;
+      }
+
+      // try inversions
       let inversion = this.findInversion(positions, transposedScale, keysAndOctaves);
       if (inversion) {
         this.setCurrentChord(inversion.root, inversion.chord);

@@ -76,7 +76,7 @@ const recorder = {
 
   /** get the status message associated with the app state */
   statusMessage() {
-    const states = ['Ready', 'Practice', 'Recording...', 'Sequence in console', 'Sequence cleared'];
+    const states = ['Waiting for input', 'Practice', 'Recording...', 'Sequence in console', 'Sequence cleared'];
     return states[this.appState];
   },
 
@@ -114,9 +114,11 @@ const recorder = {
     let startY = height * .75;
     let lineHeight = fontSize * 1.4;
 
-    fill(140);
+    fill(160);
     textSize(fontSize);
-    text('Press [P] to toggle Practice mode', width / 2, startY);
+    text(`Press [P] to enable ${this.appState === 0 ? 'practice' : 'recording'} mode`, width / 2, startY);
+
+    if (this.appState !== 0) fill(40);
     text('Press [Enter] to log MIDI sequence', width / 2, startY + (lineHeight));
     text('Press [Escape] to clear MIDI sequence', width / 2, startY + (2 * lineHeight));
   }

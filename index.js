@@ -24,7 +24,7 @@ function windowResized() {
 }
 
 function draw() {
-  background(recorder.practiceMode ? 20 : 0);
+  background(recorder.practiceMode ? 10 : 0);
 
   // draw guidelines
   if (!userHasInteracted || keyIsDown(72)) {

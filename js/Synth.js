@@ -17,7 +17,7 @@ class Synth {
 
   /** draws the guides to use the synth */
   drawInstructions() {
-    const synthWidth = windowWidth * .6;
+    const synthWidth = Math.min(windowWidth * .6, 700);
     const synthHeight = synthWidth * .5625;
 
     noStroke();
